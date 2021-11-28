@@ -1,10 +1,14 @@
 /* export GOOGLE_APPLICATION_CREDENTIALS=chatbot-app.json */
-
-import React from 'react';
+/* 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 */
+import React, { useEffect } from 'react';
 import axios from 'axios';
-import instance from './Instance.js';
+import instance from './instance.js';
 
 function Chatbot() {
+    
+    useEffect(() => {
+       eventQuery('welcomeToMyWebsite')
+    }, [])
     
     const textQuery = async (text) => {
         
@@ -27,7 +31,7 @@ function Chatbot() {
         
         try {
             // I will send request to the textQuery ROUTE
-            const response = await axios.post('/api/dialogflow/textQuery', textQueryVariables)
+            const response = await instance.post('/api/dialogflow/textQuery', textQueryVariables)
             const content = response.data.fulfillmentMessages[0] 
             conversation = {
                 who: 'bot',
@@ -36,6 +40,35 @@ function Chatbot() {
             console.log(conversation)
         } catch (error) {
             conversation = {
+                who: 'bot',
+                content: {
+                    text: {
+                        text: "Error just occured, please check the problem."
+                    }  
+                }
+            }
+            console.log(conversation)
+        }
+    }
+    
+    const eventQuery = async (event) => {
+
+        // We need to take care of the message chatbot sent
+        const eventQueryVariables = {
+            event
+        }
+        
+        try {
+            // I will send request to the textQuery ROUTE
+            const response = await instance.post('/api/dialogflow/eventQuery', eventQueryVariables)
+            const content = response.data.fulfillmentMessages[0] 
+            let conversation = {
+                who: 'bot',
+                content: content
+            }     
+            console.log(conversation)
+        } catch (error) {
+            let conversation = {
                 who: 'bot',
                 content: {
                     text: {
